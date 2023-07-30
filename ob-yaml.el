@@ -91,6 +91,14 @@ def main():
     return yaml.load(\"\"\"%s\"\"\", yaml.SafeLoader)
 
 open(\"%s\", \"w\").write( str(main()) )")
+;; (defconst org-babel-python-pp-wrapper-method-yaml
+;;   "
+;; import yaml
+;; import json
+;; def main():
+;;     return yaml.load(\"\"\"%s\"\"\", yaml.SafeLoader)
+
+;; open(\"%s\", \"w\").write(json.dumps(main(), indent=2))")
 (defconst org-babel-python-pp-wrapper-method-yaml
   "
 import pprint
@@ -98,7 +106,7 @@ import yaml
 def main():
     return yaml.load(\"\"\"%s\"\"\", yaml.SafeLoader)
 
-open(\"%s\", \"w\").write( pprint.pformat(main()) )")
+open(\"%s\", \"w\").write( pprint.pformat(main(), width=41, compact=True) )")
 
 
 (defun org-babel-yaml-evaluate-external-process
@@ -115,12 +123,14 @@ open(\"%s\", \"w\").write( pprint.pformat(main()) )")
 			               org-babel-python-wrapper-method-yaml)
 			             body
 			             (org-babel-process-file-name tmp-file 'noquote)) ;; 2
-                                )
-                        ))
-                     ;; --- eval
-		     (org-babel-eval org-babel-yaml-command-file s2)
-                     ;; body 2
-		     (org-babel-eval-read-file tmp-file))))
+                                    )
+                            ))
+              ;; --- eval
+	      (org-babel-eval org-babel-yaml-command-file s2)
+              ;; (if (member "pp" result-params)
+              ;;     (debug)
+              ;; body 2
+	      (org-babel-eval-read-file tmp-file))))
     ;; (message raw)
     ;; (debug)
     (require 'ob-python)
